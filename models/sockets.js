@@ -14,6 +14,11 @@ class Sockets {
         const ticket = this.ticketList.createTicket();
         callback(ticket);
       });
+      socket.on("next-ticket", ({ agent, desk }, callback) => {
+        const ticket = this.ticketList.assignTicket(agent, desk);
+        callback(ticket);
+        this.io.emit("tickets-assigned", this.ticketList.last12);
+      });
     });
   }
 }

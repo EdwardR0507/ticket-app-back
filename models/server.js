@@ -13,22 +13,22 @@ class Server {
     this.io = new socket.Server(this.httpServer, {
       /* options */
     });
+    this.sockets = new Sockets(this.io);
   }
   middlewares() {
     this.app.use(express.static(path.resolve(__dirname, "../public")));
     this.app.use(cors());
-  }
-
-  configSockets() {
-    new Sockets(this.io);
+    this.app.get("/latest", (req, res) => {
+      res.status(200).json({
+        ok: true,
+        lastest: this.sockets.ticketList.last12,
+      });
+    });
   }
 
   execute() {
     // Initialize middlewares
     this.middlewares();
-
-    // Initialize sockets
-    this.configSockets();
 
     // Start the server
     this.httpServer.listen(this.port, () => {
